@@ -78,7 +78,7 @@ def crear_dashboard(df):
 # Función para cargar las credenciales desde un archivo JSON
 def cargar_credenciales():
     try:
-        with open('credenciales.json', 'r') as file:
+        with open('ADH-AUTOMATIZACION/credenciales.json', 'r') as file:
             return json.load(file)
     except FileNotFoundError:
         return None
@@ -89,7 +89,7 @@ def guardar_credenciales(correo, clave):
         'correo': correo,
         'clave': clave
     }
-    with open('credenciales.json', 'w') as file:
+    with open('ADH-AUTOMATIZACION/credenciales.json', 'w') as file:
         json.dump(credenciales, file)
 
 # Interfaz de usuario con Streamlit
