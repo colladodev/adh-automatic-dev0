@@ -99,6 +99,11 @@ st.title("Inicio de Sesión")
 correo = st.text_input("Correo Electrónico")
 clave = st.text_input("Clave", type="password")
 
+# Guardar nuevas credenciales si se ingresan
+if st.button("Guardar Credenciales"):
+    guardar_credenciales(correo, clave)
+    st.success("Credenciales guardadas correctamente!")
+
 # Verificar si se ingresaron credenciales
 if correo and clave:
     # Cargar las credenciales guardadas
@@ -140,8 +145,3 @@ if correo and clave:
                 crear_dashboard(df_destino)
     else:
         st.error("Correo o clave incorrectos. Por favor, inténtalo de nuevo.")
-
-# Guardar nuevas credenciales si se ingresan
-if st.button("Guardar Credenciales"):
-    guardar_credenciales(correo, clave)
-    st.success("Credenciales guardadas correctamente!")
