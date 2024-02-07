@@ -1,6 +1,5 @@
 import pandas as pd
 import streamlit as st
-import json
 
 # Función para cargar los datos y mostrar una vista previa
 def cargar_y_mostrar_vista_previa(archivo_excel):
@@ -75,73 +74,34 @@ def crear_dashboard(df):
     # Crear gráfico de barras para las medidas
     st.bar_chart(medidas)
 
-# Función para cargar las credenciales desde un archivo JSON
-def cargar_credenciales():
-    try:
-        with open('credenciales.json', 'r') as file:
-            return json.load(file)
-    except FileNotFoundError:
-        return None
-
-# Guardar credenciales en un archivo JSON
-def guardar_credenciales(correo, clave):
-    credenciales = {
-        'correo': correo,
-        'clave': clave
-    }
-    with open('credenciales.json', 'w') as file:
-        json.dump(credenciales, file)
-
 # Interfaz de usuario con Streamlit
-st.title("Inicio de Sesión")
+st.title("Actualización de Datos")
 
-# Widget para ingresar credenciales
-correo = st.text_input("Correo Electrónico")
-clave = st.text_input("Clave", type="password")
+# Widget para cargar el primer archivo Excel
+primer_archivo = st.file_uploader("Seleccionar el primer archivo Excel", type=["xlsx"])
+df_original = None
 
-# Guardar nuevas credenciales si se ingresan
-if st.button("Guardar Credenciales"):
-    guardar_credenciales(correo, clave)
-    st.success("Credenciales guardadas correctamente!")
+# Widget para cargar el segundo archivo Excel
+segundo_archivo = st.file_uploader("Seleccionar el segundo archivo Excel", type=["xlsx"])
+df_destino = None
 
-# Verificar si se ingresaron credenciales
-if correo and clave:
-    # Cargar las credenciales guardadas
-    credenciales_guardadas = cargar_credenciales()
+# Verificar si ambos archivos han sido cargados
+if primer_archivo and segundo_archivo:
+    # Cargar y mostrar vista previa de datos del primer archivo
+    df_original = cargar_y_mostrar_vista_previa(primer_archivo)
 
-    # Verificar si las credenciales coinciden
-    if credenciales_guardadas and credenciales_guardadas['correo'] == correo and credenciales_guardadas['clave'] == clave:
-        st.success("Inicio de sesión exitoso!")
-        
-        # Redirección a la aplicación principal
-        st.title("Actualización de Datos")
+    # Cargar y mostrar vista previa de datos del segundo archivo
+    df_destino = cargar_y_mostrar_vista_previa(segundo_archivo)
 
-        # Widget para cargar el primer archivo Excel
-        primer_archivo = st.file_uploader("Seleccionar el primer archivo Excel", type=["xlsx"])
-        df_original = None
+    # Agregar botón para copiar información de "Member Number" y "Member First Name"
+    if st.button("Actualizar :)'"):
+        # Realizar la copia de información
+        df_destino = copiar_informacion_miembro(df_original, df_destino)
 
-        # Widget para cargar el segundo archivo Excel
-        segundo_archivo = st.file_uploader("Seleccionar el segundo archivo Excel", type=["xlsx"])
-        df_destino = None
+        # Mostrar la vista previa actualizada del segundo DataFrame
+        st.title("Vista Previa Actualizada del Segundo Excel")
+        st.dataframe(df_destino)
 
-        # Verificar si ambos archivos han sido cargados
-        if primer_archivo and segundo_archivo:
-            # Cargar y mostrar vista previa de datos del primer archivo
-            df_original = cargar_y_mostrar_vista_previa(primer_archivo)
+        # Crear el dashboard con los gráficos de medidas
+        crear_dashboard(df_destino)
 
-            # Cargar y mostrar vista previa de datos del segundo archivo
-            df_destino = cargar_y_mostrar_vista_previa(segundo_archivo)
-
-            # Agregar botón para copiar información de "Member Number" y "Member First Name"
-            if st.button("Actualizar :)'"):
-                # Realizar la copia de información
-                df_destino = copiar_informacion_miembro(df_original, df_destino)
-
-                # Mostrar la vista previa actualizada del segundo DataFrame
-                st.title("Vista Previa Actualizada del Segundo Excel")
-                st.dataframe(df_destino)
-
-                # Crear el dashboard con los gráficos de medidas
-                crear_dashboard(df_destino)
-    else:
-        st.error("Correo o clave incorrectos. Por favor, inténtalo de nuevo.")
